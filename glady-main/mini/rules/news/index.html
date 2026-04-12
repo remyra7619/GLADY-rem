@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>GladyMineNews — Все новости сервера GLADY</title>
+    <!-- Шрифты и иконки -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0a0f1e;
+            color: #eef2ff;
+            line-height: 1.5;
+            scroll-behavior: smooth;
+        }
+
+        /* Градиентный фон как у кубического мира */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 30%, rgba(35, 45, 60, 0.4), rgba(10, 15, 30, 0.95));
+            pointer-events: none;
+            z-index: -2;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+
+        /* ШАПКА */
+        .header {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(100, 200, 100, 0.2);
+            background: rgba(10, 15, 30, 0.8);
+            backdrop-filter: blur(12px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #aaffaa, #3b8c3e);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .logo span {
+            font-size: 0.9rem;
+            background: #2c3e2f;
+            padding: 4px 10px;
+            border-radius: 40px;
+            font-weight: 500;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 28px;
+            font-weight: 500;
+        }
+
+        .nav-links a {
+            color: #ccddf8;
+            text-decoration: none;
+            transition: 0.2s;
+            font-size: 1rem;
+        }
+
+        .nav-links a:hover {
+            color: #8eff8e;
+        }
+
+        /* Кнопка смены темы (демо) */
+        .theme-toggle {
+            background: #1e2a2e;
+            border: none;
+            color: #ffd966;
+            font-size: 1.3rem;
+            padding: 8px 12px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        /* Герой */
+        .hero {
+            margin: 48px 0 32px;
+            text-align: center;
+        }
+
+        .hero h2 {
+            font-size: 2.6rem;
+            font-weight: 800;
+            background: linear-gradient(to right, #e0ffc0, #6fbf6f);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .hero p {
+            margin-top: 12px;
+            color: #9aaec7;
+            font-size: 1.2rem;
+        }
+
+        /* Фильтр категорий */
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 40px 0 32px;
+            justify-content: center;
+        }
+
+        .cat-btn {
+            background: rgba(30, 40, 50, 0.7);
+            border: 1px solid #2e4a2e;
+            padding: 8px 20px;
+            border-radius: 60px;
+            font-weight: 600;
+            color: #d9e9ff;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+
+        .cat-btn.active {
+            background: #3c7840;
+            border-color: #a0ffa0;
+            color: white;
+            box-shadow: 0 0 12px rgba(80, 200, 80, 0.3);
+        }
+
+        .cat-btn:hover {
+            background: #2f5a33;
+        }
+
+        /* Сетка новостей */
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 28px;
+            margin: 20px 0 60px;
+        }
+
+        /* Карточка */
+        .news-card {
+            background: rgba(18, 25, 40, 0.75);
+            backdrop-filter: blur(6px);
+            border-radius: 28px;
+            border: 1px solid rgba(80, 140, 80, 0.25);
+            overflow: hidden;
+            transition: transform 0.25s ease, box-shadow 0.2s;
+            box-shadow: 0 10px 20px -8px rgba(0,0,0,0.4);
+        }
+
+        .news-card:hover {
+            transform: translateY(-6px);
+            border-color: #5f9e5f;
+            box-shadow: 0 24px 36px -12px rgba(0,0,0,0.5);
+        }
+
+        .card-img {
+            height: 190px;
+            background-size: cover;
+            background-position: center;
+            background-color: #1c2a2f;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-start;
+            padding: 12px;
+        }
+
+        .tag {
+            background: #1f3a24e6;
+            backdrop-filter: blur(4px);
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: #caffb9;
+            border-left: 3px solid #6fbf6f;
+        }
+
+        .card-content {
+            padding: 20px 20px 24px;
+        }
+
+        .date {
+            font-size: 0.75rem;
+            color: #8da3c2;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 1.45rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            line-height: 1.3;
+        }
+
+        .card-desc {
+            color: #b9c8ff;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .read-more {
+            background: none;
+            border: none;
+            color: #a3e0a3;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            padding: 6px 0;
+            font-size: 0.85rem;
+            transition: gap 0.2s;
+        }
+
+        .read-more i {
+            font-size: 0.8rem;
+        }
+
+        .read-more:hover {
+            gap: 12px;
+            color: #d4ffb0;
+        }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #111a26;
+            max-width: 600px;
+            width: 90%;
+            border-radius: 32px;
+            border: 1px solid #4b794b;
+            padding: 28px;
+            position: relative;
+            animation: fadeUp 0.25s ease;
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .close-modal {
+            position: absolute;top: 20px;
+            right: 24px;
+            font-size: 28px;
+            cursor: pointer;
+            color: #bbccff;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            margin-bottom: 16px;
+            padding-right: 24px;
+        }
+
+        .modal-body {
+            color: #cbddf5;
+            line-height: 1.6;
+        }
+
+        /* Футер */
+        .footer {
+            text-align: center;
+            padding: 40px 0 30px;
+            border-top: 1px solid #20312a;
+            margin-top: 20px;
+            color: #7d8fb0;
+        }
+
+        max-width: 700px {
+            .header-inner {
+                flex-direction: column;
+                text-align: center;
+            }
+            .hero h2 {
+                font-size: 1.9rem;
+            }
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <div class="container header-inner">
+        <div class="logo">
+            <div class="logo-icon">⛏️</div>
+            <h1>GladyMineNews</h1>
+            <span>update</span>
+        </div>
+        <div class="nav-links">
+            <a href="#">Правила</a>
+            <a href="#">Донат для сервера</a>
+            <a href="#">Загрузить моды</a>
+            <a href="https://vk.com/gladymine">Наше сообщество VK</a>
+        </div>
+        <button class="theme-toggle" id="themeToggleBtn"><i class="fas fa-pickaxe"></i> Тема</button>
+    </div>
+</header>
+
+<main class="container">
+    <div class="hero">
+        <h2>Блоки, приключения, слухи</h2>
+        <p>Самые свежие новости из сервера Glady</p>
+    </div>
+
+    <div class="categories" id="categoryFilter">
+        <button class="cat-btn active" data-cat="all">Все новости</button>
+        <button class="cat-btn" data-cat="update">Обновления</button>
+        <button class="cat-btn" data-cat="community">Сообщество</button>
+        <button class="cat-btn" data-cat="mods">моды</button>
+        <button class="cat-btn" data-cat="leaks">Донат</button>
+    </div>
+
+    <div id="newsContainer" class="news-grid">
+        <!-- Карточки будут отрендерены через JS -->
+    </div>
+</main>
+
+<div id="newsModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div class="modal-title" id="modalTitle"></div>
+        <div class="modal-body" id="modalBody"></div>
+        <div style="margin-top: 24px;"><i class="fas fa-cube"></i> Источник: GladyMineNews</div>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <p><i class="fab fa-creative-commons"></i> GladyMineNews — официальный портал для маинкрафтеров. Все новости из сервера только тут! ⛏️</p>
+        <p style="margin-top: 12px;">✨ Следи за обновлениями нашего сервера✨</p>
+    </div>
+</footer>
+
+<script>
+    // БАЗА ДАННЫХ НОВОСТЕЙ (майнкрафт-стиль)
+    const newsData = [
+        {
+            id: 1,
+            title: "Патч 1.0",
+            description: "Патч 1.0 Glady-Mine ",
+            fullText: "немного о сервере все находится в воздухе, построенно лоби где вы спавнетесь изначально или после смерти в лобби мг старый тип + тп на мг новый (мг=магазин) место где стоят админы сервера ну или те кто заслужил там быть справка о правилах и кому писать в случае ошибок лагов на сервере или уе****(читеров мы культурные) телепорт на спавн мира имеются работы (каменьщик, лесоруб, рыбак) *в будущем может будут еще, ну по крайней мере задумка на все это есть* магазины(продажа/торговля) дома(покупка/продажа) имеется локации такие как (рк/дк) *поймёте что это когда поиграете на сервере* (общага) *комнаты в общаге можно купить <навсегда>* (алхимическая + чаровальня) *думаю обьяснять не нужно что это* (море) *как раз таки место где работают рыбаки* еще... 5 секций в разработке 1 работа (как минимум) #new #patch_1_0.",
+            category: "update",
+            date: "9 января 2026",
+            image: "https://images.pexels.com/photos/1714201/pexels-photo-1714201.jpeg?auto=compress&cs=tinysrgb&w=600",
+            iconFallback: "🏗️"
+        },
+        {
+            id: 2,
+            title: "Патч 1.1",
+            description: "Патч 1.1 Glady-Mine ",
+            fullText: "𖮌обновление некоторых правил, 𖮌обновление локации спавн, 𖮌обновление лобби + мг, 𖮌обновленные локации, 𖮌обновление работы каменьшика видо-измененится, 𖮌обновленные торги у рыбаков, 𖮌обновленные торги у лесоруба, исправление:𖮌баг с дюпом монет, 𖮌вылаз за стены мира #new #patch_1_1",
+            category: "update",
+            date: "11 января 2026",
+            image: "https://images.pexels.com/photos/1162983/pexels-photo-1162983.jpeg?auto=compress&cs=tinysrgb&w=600",
+            iconFallback: "🌀"
+        },
+        {
+            id: 3,
+            title: "патч 1.2",
+            description: "Патч 1.2 Glady-mine ",
+            fullText: "было добавленно (портал в незер)(потрал в эндер мир)(семейный дома)(Vip-zona)(добавили привелегии)",
+            category: "update",
+            date: "12 января 2026",
+            image: "https://images.pexels.com/photos/1323206/pexels-photo-1323206.jpeg?auto=compress&cs=tinysrgb&w=600",
+            iconFallback: "🎮"
+        },
+        {
+            id: 4,
+            title: "Добавленны питомцы к привелегиям",
+            description: "питомцы следующие за вами",
+            fullText: "питомцы для Fly(элей) алхимик(скелетик)",
+            category: "leaks",
+            date: "12 января 2026",
+            image: "https://images.pexels.com/photos/998641/pexels-photo-998641.jpeg?auto=compress&cs=tinysrgb&w=600",
+            iconFallback: "🌌"
+        },
+        {
+            id: 5,
+            title: "у нас тоже есть свои сообщества",
+            description: "Сообщества Glady-mine.",
+            fullText: "tg: https://t.me/+z9FHgtgrTvwzNGQy vk: gladymine.",
+            category: "community",
+            date: "12 января 2026",
+            image: "https://images.pexels.com/photos/3165335/pexels-photo-3165335.jpeg?auto=compress&cs=tinysrgb&w=600",
+            iconFallback: "⚔️"
+        },
+        {
+            id: 6,
+            title: "Патч 1.3",
+            description: "микро обновление",
+            fullText: "+новая локация +новая система телепортов через бочку +новый режим раскопки +новая локация затерянный мир +новая локация богиней и богами +добавлена еще одна деревня на спавне +новые дома на спавне  ",
+            category: "update",
+            date: "17 января 2026",
+            image: "https://images.pexels.com/photos/1738935/pexels-photo-1738935.jpeg?auto=compress&cs=tinysrgb&w=600",
+            iconFallback: "🛠️"
+        },
+        {
+            id: 7,
+            title: "Патч 1.4",
+            description: "микро обновление",
+            fullText: "𐀏 Мини-игры(новый режим мини-боссы 𐀏 Торговая площадь (с жителями) 𐀏 Видо-измененная арена 𐀏 Площадь с фонтанами и общагами 𐀏 Новые питомцы привелегий 𐀏 Начнется бета-тест ранговой системы 𐁉+Локация на спавне 𐁉+Скуп артефактов 𐁉Переработанная локация море 𐁉Переработанные торговцы 𐁉Мини-игры(локация гонки на лодках по льду) #patch_1_4",
+            category: "update",
+            date: "26 января 2026",
+            image: "https://images.pexels.com/photos/1738935/pexels-photo-1738935.jpeg?auto=compress&cs=tinysrgb&w=600",
+            iconFallback: "🛠️"
+        },
+        {
+            id: 9,
+            title: "Патч 1.5",
+            description: "микро обновление",
+            fullText: "  [Локация] Торговый центр В торговом центре:1 Этаж Казино, бар,чил зона 2 Этаж Боссы средние, Боссы хардовые. 3 Этаж Тир 3 зоны.    [Локация] Амбар В амбаре:Пастух который продает яйца призыва.      [Локация] Магическая башня В Магической башне С 1 по 3 этаж стоят нпси которые продают для зелий ингредиенты 4 Этаж чаровальня максимальный уровень.  [бета-версия]      {Локация}[Город]Мэрия <цена: 150 лямов> 1 владелец и (от 1 до 2 рабочих) Полиция <цена: 45 лямов> 1 владелец и (от 1 до 10 рабочих) Школа <цена: 30 лямов> 1 владелец и (от 1 до 4 рабочих) Кафе <цена: 5 лямов> 1 владелец и (от 1 до 2 рабочих)   [New-WORK] дальнобойщики на новых машинах на против автосалона можно подняться на гору где есть задания на развоз определенных билетов      обновили локацию море то что изменилось: [парковка на море то же была изменена] [теперь машина может заехать на локацию] [через парковку] [также на море теперь есть большой красивый фонтан] [сердце с лавочкой для парочек] [так же появилась мини-деревня жителей] [на другой стороне от фонтана есть заправка ] [и двух-этажный дом в котором можно купить студию] [добавили дороги до торговой площади и деревни]  [появилась нормальная парковка для авто] [не далеко от спавна есть {заправка, ресторан,полу автосалон-сто}][переработали не которых нпс-продавцов на спавне]     в скором будущем планируется провести дороги до всех важных локаций особенно на спавне",
+            category: "update",
+            date: "27 февраля 2026 ",
+            image: "https://images.pexels.com/photos/1738935/pexels-photo-1738935.jpeg?auto=compress&cs=tinysrgb&w=600",
+            iconFallback: "🛠️"
+        },
+        {
+            id: 10,
+            title: "Патч 1.6",
+            description: "Global обновление",
+            fullText: "карта мира полностью была переработана, была добавлена подписка праим, изменение визуала каждой привелегии, добавленны питомцыы к каждой привелегии не которые привелегии и вовсе убраны с сервера, переработали саит на нем теперь можно почитать правила и приобрести привелегии",
+            category: "update",
+            date: "4 апреля 2026",
+            image: "https://images.pexels.com/photos/1738935/pexels-photo-1738935.jpeg?auto=compress&cs=tinysrgb&w=600",
+            iconFallback: "🛠️"
+        },
+        {
+            id: 11,
+            title: "Патч 1.7",
+            description: "скоро",
+            fullText: "скоро",
+            category: "update",
+            date: "запланирован 4 мая",
+            image: "https://images.pexels.com/photos/1738935/pexels-photo-1738935.jpeg?auto=compress&cs=tinysrgb&w=600",
+            iconFallback: "🛠️"
+        },
+        {
+            id: 12,
+            title: "моды для сервера находятся в тг ",
+            description: "все моды можете наити в тгк",
+            fullText: "моды могут измениться следите за выпуском модов",
+            category: "mods",
+            date: "12 апреля 2026",
+            image: "https://images.pexels.com/photos/534220/pexels-photo-534220.jpeg?auto=compress&cs=tinysrgb&w=600",
+            iconFallback: "💰"
+        },      
+        {
+            id: 13,
+            title: "скоро",
+            description: "скоро",
+            fullText: "скоро",
+            category: "mods",
+            date: "скоро",
+            image: "https://images.pexels.com/photos/1262304/pexels-photo-1262304.jpeg?auto=compress&cs=tinysrgb&w=600",
+            iconFallback: "💎"
+        },
+    ];
+
+    // Функция рендера новостей с фильтром
+    let currentCategory = "all";
+
+    function renderNews() {
+        const container = document.getElementById("newsContainer");
+        if (!container) return;
+        
+        const filteredNews = currentCategory === "all" 
+            ? newsData 
+            : newsData.filter(item => item.category === currentCategory);
+        
+        if (filteredNews.length === 0) {
+            container.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding: 60px;"><i class="fas fa-dragon" style="font-size: 48px;"></i><p style="margin-top: 16px;">Новостей в этой категории пока нет, но криперы работают над ними!</p></div>`;
+            return;
+        }
+        
+        container.innerHTML = filteredNews.map(news => `
+            <div class="news-card" data-id="${news.id}">
+                <div class="card-img" style="background-image: url('${news.image}'); background-size: cover; background-position: center;">
+                    <div class="tag">${getCategoryLabel(news.category)}</div>
+                </div>
+                <div class="card-content">
+                    <div class="date"><i class="far fa-calendar-alt"></i> ${news.date}</div>
+                    <div class="card-title">${escapeHtml(news.title)}</div>
+                    <div class="card-desc">${escapeHtml(news.description)}</div>
+                    <button class="read-more" data-id="${news.id}">Читать далее <i class="fas fa-arrow-right"></i></button>
+                </div>
+            </div>
+        `).join("");
+        
+        // Вешаем обработчики на кнопки "читать далее"
+        document.querySelectorAll('.read-more').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const id = parseInt(btn.getAttribute('data-id'));
+                const article = newsData.find(n => n.id === id);
+                if (article) openModal(article);
+            });
+        });
+    }
+    
+    function getCategoryLabel(cat) {
+        const map = {
+            update: '🔧 ОБНОВЛЕНИЕ',
+            community: '👥 СООБЩЕСТВО',
+            mods: '⚙️ МОДЫ',
+            leaks: '🤫 Донат'
+        };
+        return map[cat] || '📰 НОВОСТЬ';
+    }
+    
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        }).replace(/[\uD800-\uDBFF][\uDC00-\uDFFF]/g, function(c) {
+            return c;
+        });
+    }
+    
+    // Модальное окно
+    const modal = document.getElementById("newsModal");
+    const modalTitle = document.getElementById("modalTitle");
+    const modalBody = document.getElementById("modalBody");
+    const closeModalBtn = document.querySelector(".close-modal");
+    
+    function openModal(news) {
+        modalTitle.innerText = news.title;
+        modalBody.innerHTML = `<p>${escapeHtml(news.fullText)}</p><div style="margin-top: 20px; border-top: 1px solid #2c4a33; padding-top: 12px;"><i class="fas fa-tag"></i> ${getCategoryLabel(news.category)} &nbsp;|&nbsp; <i class="far fa-clock"></i> ${news.date}</div>`;
+        modal.style.display = "flex";
+        document.body.style.overflow = "hidden";
+    }
+    
+    function closeModal() {
+        modal.style.display = "none";
+        document.body.style.overflow = "";
+    }
+    
+    closeModalBtn.addEventListener("click", closeModal);
+    window.addEventListener("click", (e) => {
+        if (e.target === modal) closeModal();
+    });
+    
+    // Фильтр категорий
+    const catButtons = document.querySelectorAll(".cat-btn");
+    catButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            catButtons.forEach(b => b.classList.remove("active"));
+            btn.classList.add("active");
+            currentCategory = btn.getAttribute("data-cat");
+            renderNews();
+        });
+    });
+    
+    // Тема (светлая/темная) с локальным состоянием (без перезагрузки стилей для демо)
+    const themeBtn = document.getElementById("themeToggleBtn");
+    let isLight = false;
+    themeBtn.addEventListener("click", () => {
+        isLight = !isLight;
+        if (isLight) {
+            document.body.style.background = "#f5f7fc";
+            document.body.style.color = "#111";
+            document.querySelectorAll(".news-card").forEach(card => {
+                card.style.background = "rgba(245, 248, 255, 0.9)";
+                card.style.borderColor = "#bdd4b0";
+            });
+            document.querySelector(".header").style.background = "rgba(240, 245, 250, 0.9)";
+            document.querySelector(".header").style.borderBottomColor = "#bbccaa";
+            document.querySelectorAll(".card-desc").forEach(d => d.style.color = "#2c3e42");
+            document.querySelectorAll(".date").forEach(d => d.style.color = "#4b6a7c");
+            themeBtn.style.background = "#e0e7e0";
+            themeBtn.style.color = "#2b4f2b";
+        } else {
+            document.body.style.background = "#0a0f1e";
+            document.body.style.color = "#eef2ff";
+            document.querySelectorAll(".news-card").forEach(card => {
+                card.style.background = "rgba(18, 25, 40, 0.75)";
+                card.style.borderColor = "rgba(80, 140, 80, 0.25)";
+            });
+            document.querySelector(".header").style.background = "rgba(10, 15, 30, 0.8)";
+            document.querySelector(".header").style.borderBottomColor = "rgba(100, 200, 100, 0.2)";
+            document.querySelectorAll(".card-desc").forEach(d => d.style.color = "#b9c8ff");
+            document.querySelectorAll(".date").forEach(d => d.style.color = "#8da3c2");
+            themeBtn.style.background = "#1e2a2e";
+            themeBtn.style.color = "#ffd966";
+        }
+    });
+    
+    // Инициализация
+    renderNews();
+</script>
+</body>
+</html>
